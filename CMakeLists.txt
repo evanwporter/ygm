@@ -32,8 +32,8 @@ option(YGM_BUILD_EXAMPLES "Build examples" OFF)
 option(YGM_BUILD_TOOLS "Build tools" OFF)
 option(YGM_BUILD_DOCS "Adds targets for generating Doxygen and Sphinx documentation" OFF)
 option(YGM_DOCS_ONLY "Run Cmake for only generating documentation (i.e. for Read the Docs)" OFF)
-option(YGM_REQUIRE_PARQUET "YGM requires Arrow Parquet." OFF)
-option(YGM_INSTALL_PARQUET "YGM installs Arrow Parquet if it is not found." OFF)
+option(YGM_INSTALL_PARQUET "Installs Arrow Parquet if it is not found." OFF)
+option(YGM_REQUIRE_PARQUET "Throws a fatal error if Arrow Parquet is not available or is not installed successfully." OFF)
 
 #
 # Doxygen and Read the Docs (RTD) Documentation
