@@ -1136,7 +1136,7 @@ inline bool comm::local_process_incoming() {
   return received_to_return;
 }
 
-void comm::enable_ygm_tracing() {
+inline void comm::enable_ygm_tracing() {
   // Setup tracing if not already enabled
   if (!m_trace_ygm && !m_trace_mpi) {
     m_tracer.create_directory();
@@ -1146,7 +1146,7 @@ void comm::enable_ygm_tracing() {
   m_trace_ygm = true;
 }
 
-void comm::enable_mpi_tracing() {
+inline void comm::enable_mpi_tracing() {
   // Setup tracing if not already enabled
   if (!m_trace_ygm && !m_trace_mpi) {
     m_tracer.create_directory();
@@ -1156,7 +1156,7 @@ void comm::enable_mpi_tracing() {
   m_trace_mpi = true;
 }
 
-void comm::disable_ygm_tracing() {
+inline void comm::disable_ygm_tracing() {
   m_trace_ygm = false;
   cf_barrier();
   // if (!m_trace_ygm && !m_trace_mpi) {
@@ -1165,7 +1165,7 @@ void comm::disable_ygm_tracing() {
   // }
 }
 
-void comm::disable_mpi_tracing() {
+inline void comm::disable_mpi_tracing() {
   m_trace_mpi = false;
   cf_barrier();
 
@@ -1175,9 +1175,9 @@ void comm::disable_mpi_tracing() {
   // }
 }
 
-bool comm::is_ygm_tracing_enabled() const { return m_trace_ygm; }
+inline bool comm::is_ygm_tracing_enabled() const { return m_trace_ygm; }
 
-bool comm::is_mpi_tracing_enabled() const { return m_trace_mpi; }
+inline bool comm::is_mpi_tracing_enabled() const { return m_trace_mpi; }
 
 template <typename StringType>
 inline void comm::set_log_location(const StringType &s) {
