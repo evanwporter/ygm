@@ -33,6 +33,7 @@ option(YGM_BUILD_TOOLS "Build tools" OFF)
 option(YGM_BUILD_DOCS "Adds targets for generating Doxygen and Sphinx documentation" OFF)
 option(YGM_DOCS_ONLY "Run Cmake for only generating documentation (i.e. for Read the Docs)" OFF)
 option(YGM_INSTALL_PARQUET "Installs Arrow Parquet." OFF)
+option(YGM_DONT_USE_MREMAP "Do not try using mremap for managing memory." OFF)
 
 #
 # Doxygen and Read the Docs (RTD) Documentation
@@ -133,6 +134,10 @@ target_link_libraries(
     PUBLIC
     INTERFACE MPI::MPI_CXX Threads::Threads cereal spdlog_header_only
 )
+
+if (YGM_DONT_USE_MREMAP)
+    target_compile_definitions(ygm INTERFACE YGM_DONT_USE_MREMAP)
+endif ()
 
 if (UNIX AND NOT APPLE)
     target_link_libraries(
