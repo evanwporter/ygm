@@ -79,10 +79,10 @@ class map
   }
 
   template <typename STLContainer>
-  map(ygm::comm&          comm,
-      const STLContainer& cont) requires detail::STLContainer<STLContainer> &&
-      std::convertible_to<typename STLContainer::value_type,
-                          std::pair<Key, Value>>
+  map(ygm::comm& comm, const STLContainer& cont)
+    requires detail::STLContainer<STLContainer> &&
+                 std::convertible_to<typename STLContainer::value_type,
+                                     std::pair<Key, Value>>
       : m_comm(comm), pthis(this), partitioner(comm), m_default_value() {
     m_comm.log(log_level::info, "Creating ygm::container::map");
     pthis.check(m_comm);
@@ -94,9 +94,9 @@ class map
   }
 
   template <typename YGMContainer>
-  map(ygm::comm&          comm,
-      const YGMContainer& yc) requires detail::HasForAll<YGMContainer> &&
-      detail::SingleItemTuple<typename YGMContainer::for_all_args>
+  map(ygm::comm& comm, const YGMContainer& yc)
+    requires detail::HasForAll<YGMContainer> &&
+                 detail::SingleItemTuple<typename YGMContainer::for_all_args>
       : m_comm(comm), pthis(this), partitioner(comm), m_default_value() {
     m_comm.log(log_level::info, "Creating ygm::container::map");
     pthis.check(m_comm);
@@ -111,6 +111,40 @@ class map
   ~map() {
     m_comm.log(log_level::info, "Destroying ygm::container::map");
     m_comm.barrier();
+  }
+
+  map(const self_type& other)
+      : m_comm(other.comm()),
+        pthis(this),
+        partitioner(other.comm()),
+        m_default_value(other.m_default_value),
+        m_local_map(other.m_local_map) {
+    m_comm.log(log_level::info, "Copying ygm::container::map");
+    pthis.check(m_comm);
+  }
+
+  map(self_type&& other) noexcept
+      : m_comm(other.comm()),
+        pthis(this),
+        partitioner(other.comm()),
+        m_default_value(other.m_default_value),
+        m_local_map(std::move(other.m_local_map)) {
+    m_comm.log(log_level::info, "Moving ygm::container::map");
+    pthis.check(m_comm);
+  }
+
+  map& operator=(const self_type& other) {
+    m_comm.log(log_level::info,
+               "Calling ygm::container::map copy assignment operator");
+    return *this = map(other);
+  }
+
+  map& operator=(self_type&& other) {
+    m_comm.log(log_level::info,
+               "Calling ygm::container::map move assignment operator");
+    std::swap(m_local_map, other.m_local_map);
+    std::swap(m_default_value, other.m_default_value);
+    return *this;
   }
 
   using detail::base_async_erase_key<map<Key, Value>,
@@ -413,9 +447,10 @@ class multimap
   }
 
   template <typename STLContainer>
-  multimap(ygm::comm& comm, const STLContainer& cont) requires
-      detail::STLContainer<STLContainer> && std::convertible_to<
-          typename STLContainer::value_type, std::pair<Key, Value>>
+  multimap(ygm::comm& comm, const STLContainer& cont)
+    requires detail::STLContainer<STLContainer> &&
+                 std::convertible_to<typename STLContainer::value_type,
+                                     std::pair<Key, Value>>
       : m_comm(comm), pthis(this), partitioner(comm), m_default_value() {
     m_comm.log(log_level::info, "Creating ygm::container::multimap");
     pthis.check(m_comm);
@@ -427,9 +462,9 @@ class multimap
   }
 
   template <typename YGMContainer>
-  multimap(ygm::comm&          comm,
-           const YGMContainer& yc) requires detail::HasForAll<YGMContainer> &&
-      detail::SingleItemTuple<typename YGMContainer::for_all_args>
+  multimap(ygm::comm& comm, const YGMContainer& yc)
+    requires detail::HasForAll<YGMContainer> &&
+                 detail::SingleItemTuple<typename YGMContainer::for_all_args>
       : m_comm(comm), pthis(this), partitioner(comm), m_default_value() {
     m_comm.log(log_level::info, "Creating ygm::container::multimap");
     pthis.check(m_comm);
@@ -444,6 +479,40 @@ class multimap
   ~multimap() {
     m_comm.log(log_level::info, "Destroying ygm::container::multimap");
     m_comm.barrier();
+  }
+
+  multimap(const self_type& other)
+      : m_comm(other.comm()),
+        pthis(this),
+        partitioner(other.comm()),
+        m_default_value(other.m_default_value),
+        m_local_map(other.m_local_map) {
+    m_comm.log(log_level::info, "Copying ygm::container::map");
+    pthis.check(m_comm);
+  }
+
+  multimap(self_type&& other) noexcept
+      : m_comm(other.comm()),
+        pthis(this),
+        partitioner(other.comm()),
+        m_default_value(other.m_default_value),
+        m_local_map(std::move(other.m_local_map)) {
+    m_comm.log(log_level::info, "Moving ygm::container::map");
+    pthis.check(m_comm);
+  }
+
+  multimap& operator=(const self_type& other) {
+    m_comm.log(log_level::info,
+               "Calling ygm::container::map copy assignment operator");
+    return *this = multimap(other);
+  }
+
+  multimap& operator=(self_type&& other) {
+    m_comm.log(log_level::info,
+               "Calling ygm::container::map move assignment operator");
+    std::swap(m_local_map, other.m_local_map);
+    std::swap(m_default_value, other.m_default_value);
+    return *this;
   }
 
   void local_insert(const key_type& key) {
