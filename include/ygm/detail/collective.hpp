@@ -5,7 +5,10 @@
 
 #pragma once
 
-#include <ygm/comm.hpp>
+// Note: collective.hpp should not be included directly by users. This may cause
+// the collectives to be unable to find a definition of `ygm::comm` or the
+// `ygm::comm` to be unable to find a definition for collective operations it is
+// using.
 
 namespace ygm {
 
@@ -24,7 +27,7 @@ T prefix_sum(const T &value, const comm &c) {
   c.barrier();
   MPI_Comm mpi_comm = c.get_mpi_comm();
   YGM_ASSERT_MPI(MPI_Exscan(&value, &to_return, 1, detail::mpi_typeof(value),
-                        MPI_SUM, mpi_comm));
+                            MPI_SUM, mpi_comm));
   return to_return;
 }
 
@@ -43,7 +46,7 @@ T sum(const T &value, const comm &c) {
   c.barrier();
   MPI_Comm mpi_comm = c.get_mpi_comm();
   YGM_ASSERT_MPI(MPI_Allreduce(&value, &to_return, 1, detail::mpi_typeof(T()),
-                           MPI_SUM, mpi_comm));
+                               MPI_SUM, mpi_comm));
   return to_return;
 }
 
@@ -62,7 +65,7 @@ T min(const T &value, const comm &c) {
   c.barrier();
   MPI_Comm mpi_comm = c.get_mpi_comm();
   YGM_ASSERT_MPI(MPI_Allreduce(&value, &to_return, 1, detail::mpi_typeof(T()),
-                           MPI_MIN, mpi_comm));
+                               MPI_MIN, mpi_comm));
   return to_return;
 }
 
@@ -81,7 +84,7 @@ T max(const T &value, const comm &c) {
   c.barrier();
   MPI_Comm mpi_comm = c.get_mpi_comm();
   YGM_ASSERT_MPI(MPI_Allreduce(&value, &to_return, 1, detail::mpi_typeof(T()),
-                           MPI_MAX, mpi_comm));
+                               MPI_MAX, mpi_comm));
   return to_return;
 }
 
@@ -98,8 +101,8 @@ inline bool logical_and(bool value, const comm &c) {
   bool to_return;
   c.barrier();
   MPI_Comm mpi_comm = c.get_mpi_comm();
-  YGM_ASSERT_MPI(MPI_Allreduce(&value, &to_return, 1, detail::mpi_typeof(bool()),
-                           MPI_LAND, mpi_comm));
+  YGM_ASSERT_MPI(MPI_Allreduce(&value, &to_return, 1,
+                               detail::mpi_typeof(bool()), MPI_LAND, mpi_comm));
   return to_return;
 }
 
@@ -116,8 +119,8 @@ inline bool logical_or(bool value, const comm &c) {
   bool to_return;
   c.barrier();
   MPI_Comm mpi_comm = c.get_mpi_comm();
-  YGM_ASSERT_MPI(MPI_Allreduce(&value, &to_return, 1, detail::mpi_typeof(bool()),
-                           MPI_LOR, mpi_comm));
+  YGM_ASSERT_MPI(MPI_Allreduce(&value, &to_return, 1,
+                               detail::mpi_typeof(bool()), MPI_LOR, mpi_comm));
   return to_return;
 }
 
@@ -143,13 +146,14 @@ void bcast(T &to_bcast, int root, const comm &cm) {
     }
     size_t packed_size = packed.size();
     YGM_ASSERT_RELEASE(packed_size < 1024 * 1024 * 1024);
-    YGM_ASSERT_MPI(MPI_Bcast(&packed_size, 1, ygm::detail::mpi_typeof(packed_size),
-                         root, cm.get_mpi_comm()));
+    YGM_ASSERT_MPI(MPI_Bcast(&packed_size, 1,
+                             ygm::detail::mpi_typeof(packed_size), root,
+                             cm.get_mpi_comm()));
     if (cm.rank() != root) {
       packed.resize(packed_size);
     }
     YGM_ASSERT_MPI(MPI_Bcast(packed.data(), packed_size, MPI_BYTE, root,
-                         cm.get_mpi_comm()));
+                             cm.get_mpi_comm()));
 
     if (cm.rank() != root) {
       cereal::YGMInputArchive iarchive(packed.data(), packed.size());
