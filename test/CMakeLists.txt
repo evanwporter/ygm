@@ -72,6 +72,7 @@ add_ygm_test(test_transform)
 add_ygm_test(test_local_visit)
 add_ygm_test(test_progress_indicator)
 add_ygm_test(test_boost_string)
+add_ygm_test(test_wout_werr)
 add_ygm_test(test_ndjson_parser)
 
 

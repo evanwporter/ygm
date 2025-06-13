@@ -6,6 +6,7 @@
 #pragma once
 
 #include <mpi.h>
+#include <iostream>
 #include <ygm/detail/ygm_traits.hpp>
 #include <ygm/utility/assert.hpp>
 

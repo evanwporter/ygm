@@ -22,6 +22,7 @@
 #include <ygm/detail/mpi.hpp>
 #include <ygm/detail/tracer.hpp>
 #include <ygm/detail/ygm_cereal_archive.hpp>
+#include <ygm/utility/world.hpp>
 
 namespace ygm {
 
@@ -283,12 +284,6 @@ class comm {
   bool process_receive_queue();
 
   bool priv_barrier(bool is_full);
-
-  template <typename... Args>
-  std::string outstr(Args &&...args) const;
-
-  template <typename... Args>
-  std::string outstr0(Args &&...args) const;
 
   comm() = delete;
 
