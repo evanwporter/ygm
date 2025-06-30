@@ -1,4 +1,4 @@
-// Copyright 2019-2021 Lawrence Livermore National Security, LLC and other YGM
+// Copyright 2019-2025 Lawrence Livermore National Security, LLC and other YGM
 // Project Developers. See the top-level COPYRIGHT file for details.
 //
 // SPDX-License-Identifier: MIT
@@ -25,7 +25,8 @@ class transform_proxy_value
                           std::declval<typename Container::for_all_args>()));
 
  public:
-  using for_all_args = type_traits::tuple_wrapper<map_function_ret>::type;
+  using for_all_args =
+      typename type_traits::tuple_wrapper<map_function_ret>::type;
 
   transform_proxy_value(Container& rc, MapFunction filter)
       : m_rcontainer(rc), m_map_fn(filter) {}
@@ -80,7 +81,8 @@ class transform_proxy_key_value
                           std::declval<typename Container::for_all_args>()));
 
  public:
-  using for_all_args = type_traits::tuple_wrapper<map_function_ret>::type;
+  using for_all_args =
+      typename type_traits::tuple_wrapper<map_function_ret>::type;
 
   transform_proxy_key_value(Container& rc, MapFunction filter)
       : m_rcontainer(rc), m_map_fn(filter) {}

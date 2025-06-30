@@ -1,4 +1,4 @@
-// Copyright 2019-2021 Lawrence Livermore National Security, LLC and other YGM
+// Copyright 2019-2025 Lawrence Livermore National Security, LLC and other YGM
 // Project Developers. See the top-level COPYRIGHT file for details.
 //
 // SPDX-License-Identifier: MIT
@@ -7,7 +7,6 @@
 #include <fstream>
 #include <unordered_map>
 #include <vector>
-#include <ygm/collective.hpp>
 #include <ygm/comm.hpp>
 #include <ygm/container/container_traits.hpp>
 #include <ygm/container/detail/hash_partitioner.hpp>
@@ -131,10 +130,14 @@ class disjoint_set_impl {
 
   disjoint_set_impl(ygm::comm &comm, const size_t cache_size)
       : m_comm(comm), pthis(this), m_cache(cache_size) {
+    m_comm.log(log_level::info, "Creating ygm::container::disjoint_set");
     pthis.check(m_comm);
   }
 
-  ~disjoint_set_impl() { m_comm.barrier(); }
+  ~disjoint_set_impl() {
+    m_comm.log(log_level::info, "Destroying ygm::container::disjoint_set");
+    m_comm.barrier();
+  }
 
   typename ygm::ygm_ptr<self_type> get_ygm_ptr() const { return pthis; }
 
@@ -416,7 +419,7 @@ class disjoint_set_impl {
                   std::forward_as_tuple(orig_a, orig_b, true, args...));
             } else {
               static_assert(
-                  ygm::detail::always_false<>,
+                  ygm::detail::always_false<Function>,
                   "remote disjoint_set lambda signature must be invocable "
                   "with (const value_type &, const value_type &, const bool) "
                   "signature");
@@ -460,7 +463,7 @@ class disjoint_set_impl {
                     std::forward_as_tuple(orig_a, orig_b, true, args...));
               } else {
                 static_assert(
-                    ygm::detail::always_false<>,
+                    ygm::detail::always_false<Function>,
                     "remote disjoint_set lambda signature must be invocable "
                     "with (const value_type &, const value_type &, const bool) "
                     "signature");
@@ -617,7 +620,7 @@ class disjoint_set_impl {
         fn(item, item_data.get_parent());
       }
     } else {
-      static_assert(ygm::detail::always_false<>,
+      static_assert(ygm::detail::always_false<Function>,
                     "local disjoint_set lambda signature must be invocable "
                     "with (const value_type &, const value_type &) signature");
     }
@@ -681,7 +684,7 @@ class disjoint_set_impl {
 
   size_t size() {
     m_comm.barrier();
-    return m_comm.all_reduce_sum(m_local_item_map.size());
+    return ::ygm::sum(m_local_item_map.size(), m_comm);
   }
 
   size_type num_sets() {
@@ -692,8 +695,7 @@ class disjoint_set_impl {
         ++num_local_sets;
       }
     }
-    return m_comm.all_reduce_sum(num_local_sets);
-    return 0;
+    return ::ygm::sum(num_local_sets, m_comm);
   }
 
   int owner(const value_type &item) const {

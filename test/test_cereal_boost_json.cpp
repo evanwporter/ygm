@@ -1,4 +1,4 @@
-// Copyright 2019-2021 Lawrence Livermore National Security, LLC and other YGM
+// Copyright 2019-2025 Lawrence Livermore National Security, LLC and other YGM
 // Project Developers. See the top-level COPYRIGHT file for details.
 //
 // SPDX-License-Identifier: MIT
@@ -9,9 +9,9 @@
 #include <string>
 #include <vector>
 #include <ygm/detail/byte_vector.hpp>
-#include <ygm/detail/cereal_boost_json.hpp>
-#include <ygm/detail/assert.hpp>
 #include <ygm/detail/ygm_cereal_archive.hpp>
+#include <ygm/utility/assert.hpp>
+#include <ygm/utility/boost_json.hpp>
 
 namespace bj = boost::json;
 
@@ -30,7 +30,7 @@ std::string json_string = R"(
 )";
 
 int main() {
-  ygm::detail::byte_vector   buffer;
+  ygm::detail::byte_vector buffer;
   {
     const bj::value          value = bj::parse(json_string);
     cereal::YGMOutputArchive archive(buffer);

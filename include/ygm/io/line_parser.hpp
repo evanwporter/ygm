@@ -1,4 +1,4 @@
-// Copyright 2019-2021 Lawrence Livermore National Security, LLC and other YGM
+// Copyright 2019-2025 Lawrence Livermore National Security, LLC and other YGM
 // Project Developers. See the top-level COPYRIGHT file for details.
 //
 // SPDX-License-Identifier: MIT
@@ -17,7 +17,6 @@ namespace fs = std::filesystem;
 
 /**
  * @brief Distributed text file parsing.
- *
  */
 class line_parser : public ygm::container::detail::base_iteration_value<
                         line_parser, std::tuple<std::string>> {
@@ -32,8 +31,8 @@ class line_parser : public ygm::container::detail::base_iteration_value<
   /**
    * @brief Construct a new line parser object
    *
-   * @param comm
-   * @param stringpaths
+   * @param comm Communicator to use for communication
+   * @param stringpaths Vector of paths to files to read
    * @param node_local_filesystem True if paths are to a node-local filesystem
    * @param recursive True if directory traversal should be recursive
    */
@@ -54,7 +53,7 @@ class line_parser : public ygm::container::detail::base_iteration_value<
   /**
    * @brief Executes a user function for every line in a set of files.
    *
-   * @tparam Function
+   * @tparam Function functor type
    * @param fn User function to execute
    */
   template <typename Function>
@@ -195,6 +194,11 @@ class line_parser : public ygm::container::detail::base_iteration_value<
       }
       // Keep reading until line containing bytes_end is read
       while (ifs.tellg() <= bytes_end && std::getline(ifs, line)) {
+        // Check if last character is '\r'. This will happen if a file was
+        // edited on Windows and can cause issues for parsing
+        if (not line.empty() && (line.back() == 0x0D)) {
+          line.resize(line.size() - 1);
+        }
         // Skip first line if necessary
         if (not first_line || not m_skip_first_line) {
           fn(line);
@@ -229,8 +233,8 @@ class line_parser : public ygm::container::detail::base_iteration_value<
   /**
    * @brief Check readability of paths and iterates through directories
    *
-   * @param stringpaths
-   * @param recursive
+   * @param stringpaths Vector of paths to check
+   * @param recursive True if directory traversal should be recursive
    */
   void check_paths(const std::vector<std::string>& stringpaths,
                    bool                            recursive) {
@@ -327,7 +331,7 @@ class line_parser : public ygm::container::detail::base_iteration_value<
   /**
    * @brief Checks if file is readable
    *
-   * @param p
+   * @param p Path to file
    * @return true
    * @return false
    */

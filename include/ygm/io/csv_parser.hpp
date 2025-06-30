@@ -1,4 +1,4 @@
-// Copyright 2019-2021 Lawrence Livermore National Security, LLC and other YGM
+// Copyright 2019-2025 Lawrence Livermore National Security, LLC and other YGM
 // Project Developers. See the top-level COPYRIGHT file for details.
 //
 // SPDX-License-Identifier: MIT
@@ -15,6 +15,9 @@
 
 namespace ygm::io {
 
+/**
+ * @brief Class for parsing collections of CSV files in distributed memory
+ */
 class csv_parser : public ygm::container::detail::base_iteration_value<
                        csv_parser, std::tuple<std::vector<detail::csv_field>>> {
  public:
@@ -27,7 +30,7 @@ class csv_parser : public ygm::container::detail::base_iteration_value<
   /**
    * @brief Executes a user function for every CSV record in a set of files.
    *
-   * @tparam Function
+   * @tparam Function functor type
    * @param fn User function to execute
    */
   template <typename Function>

@@ -1,4 +1,4 @@
-// Copyright 2019-2021 Lawrence Livermore National Security, LLC and other YGM
+// Copyright 2019-2025 Lawrence Livermore National Security, LLC and other YGM
 // Project Developers. See the top-level COPYRIGHT file for details.
 //
 // SPDX-License-Identifier: MIT
@@ -105,7 +105,7 @@ class reducing_adapter {
                              Container, ygm::container::array_tag>()) {
       m_container.async_binary_op_update_value(key, value, m_reducer);
     } else {
-      static_assert(ygm::detail::always_false<>,
+      static_assert(ygm::detail::always_false<ReductionOp>,
                     "Container unsuitable for reducing_adapter");
     }
   }

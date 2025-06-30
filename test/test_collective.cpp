@@ -1,11 +1,10 @@
-// Copyright 2019-2021 Lawrence Livermore National Security, LLC and other YGM
+// Copyright 2019-2025 Lawrence Livermore National Security, LLC and other YGM
 // Project Developers. See the top-level COPYRIGHT file for details.
 //
 // SPDX-License-Identifier: MIT
 
 #undef NDEBUG
 
-#include <ygm/collective.hpp>
 #include <ygm/comm.hpp>
 
 int main(int argc, char** argv) {
